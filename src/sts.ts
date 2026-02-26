@@ -2,14 +2,14 @@ import { STSClient, AssumeRoleCommand } from "@aws-sdk/client-sts";
 
 const STANDARD_DURATIONS = [43200, 21600, 7200, 3600];
 
-function isDurationError(err: unknown): boolean {
+export function isDurationError(err: unknown): boolean {
   const msg = String(err).toLowerCase();
   return msg.includes("durationseconds") || (msg.includes("duration") && msg.includes("exceed"));
 }
 
 // Builds a descending list of durations to try: the user's value first (if non-standard),
 // then all standard values <= the user's value.
-function durationLadder(userDuration: number): number[] {
+export function durationLadder(userDuration: number): number[] {
   const ladder = STANDARD_DURATIONS.includes(userDuration) ? [] : [userDuration];
   for (const d of STANDARD_DURATIONS) {
     if (d <= userDuration) ladder.push(d);
