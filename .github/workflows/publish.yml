@@ -22,11 +22,22 @@ jobs:
 
       - run: bun test
 
+      - name: Set package version from release tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          npm version "$VERSION" --no-git-tag-version
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
 
-      - run: npm publish --provenance --access public
+      - name: Publish to npm
+        run: |
+          TAG="latest"
+          if [ "${{ github.event.release.prerelease }}" = "true" ]; then
+            TAG="next"
+          fi
+          npm publish --provenance --access public --tag "$TAG"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
