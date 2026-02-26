@@ -1,0 +1,18 @@
+{
+  "name": "claude-aws-mfa",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "claude-aws-mfa": "./src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sts": "^3.998.0",
+    "webview-bun": "^2.4.0"
+  }
+}
