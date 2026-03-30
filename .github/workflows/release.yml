@@ -52,8 +52,13 @@ jobs:
     needs: detect-release
     if: needs.detect-release.outputs.version != ''
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.RELEASE_PAT }}
 
       - uses: oven-sh/setup-bun@v2
         with:
@@ -69,12 +74,10 @@ jobs:
           npm version "${VERSION#v}" --no-git-tag-version
 
       - name: Create Git tag
-        env:
-          GH_TOKEN: ${{ secrets.RELEASE_PAT }}
         run: |
           VERSION="${{ needs.detect-release.outputs.version }}"
           git tag "$VERSION"
-          git push "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" "$VERSION"
+          git push origin "$VERSION"
 
       - name: Extract changelog entry
         id: changelog
@@ -106,8 +109,6 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Publish to npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           TAG="latest"
           if [ "${{ needs.detect-release.outputs.prerelease }}" = "true" ]; then
